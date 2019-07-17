@@ -3,15 +3,40 @@
     margin: 3%;
 }
 
-#delete-icon {
-    width: 30%;
-    /* margin: 3%; */
+
+
+#delete-icon  {
+    width: 20%;
+    margin-left: 50%;
 }
 
 
 #info-icon-fav {
-    width: 31%;
-    /* margin: 3%; */
+    width: 20%;
+    margin-left: 30%;
+}
+
+
+
+/* iPhone X */
+@media only screen 
+  and (min-device-width: 375px) 
+  and (max-device-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: portrait) { 
+
+
+      .heart-icon {
+        margin-left: 10%;
+        float: left;
+        width: 15%;
+    }
+    
+    .info-icon {
+        margin-right: 10%;
+        float: right;
+        width: 15%;
+    }
 }
 
 

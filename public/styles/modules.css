@@ -1,11 +1,14 @@
 /* Code from https://www.w3schools.com/howto/howto_css_text_buttons.asp */
 
+
+
+
 /* //////////////////////////// */
 /* //////////Index///////////// */
 /* //////////////////////////// */
 
 /* Inputs */
-input {
+.form-input {
   width: 68%;
   height: 20%;
   padding-left: 2%;
@@ -170,7 +173,7 @@ select {
   } */
   
 .flexPet {
-    height: 100%;
+    height: 93%;
     margin-top: 5%;
     margin-bottom: 5%;
     display: flex;
@@ -281,10 +284,7 @@ select {
 }
 
 .favorite-pets img{
-  width: 600px;
-  max-width: 90%;
   margin: 6% 0;
-  display: block;
   margin-left: auto;
   margin-right: auto;
   border-radius: 8px;
@@ -292,24 +292,16 @@ select {
   -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
   box-shadow: 7px 7px 7px 0px rgba(0,0,0,0.50);
   max-height: auto;
-  max-width: 100%;
+  max-width: 60%;
   display: flex;
 } 
 
-/* #delete-button {
-  width: 14em;
-  margin: 0 auto;
-  margin-top: 7%;
-} */
 
 hr {
   margin-top: 5%;
   margin-bottom: 5%;
 }
 
-.adopt-me-button {
-  margin: 15%;
-}
 
 
 #adopt-me-search {
@@ -348,11 +340,12 @@ hr {
 }
 
 .adopt-me-button {
-  margin: 8%;
+
   padding: .8em;
   /* padding-left: 5%;
   padding-right: 5%; */
   text-align: center;
+  width: 63%;
 }
 
 #button-wrap {
@@ -417,4 +410,72 @@ a:hover {
   box-shadow: 7px 7px 7px 0px rgba(0,0,0,0.50);
 
 }
+
+/* iPhone X */
+/* apple media queries from https://lincolncollective.com/css-media-queries-for-apple-devices/ */
+
+@media only screen 
+  and (min-device-width: 375px) 
+  and (max-device-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: portrait) { 
+
+    .flexPet {
+      height: 100%;
+      margin-top: 5%;
+      margin-bottom: 8%;   
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #000000;
+      border-radius: 9px;
+  }
+
+  .favorite-pets img{
+    margin: 6% 0;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 8px;
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 7px 7px 7px 0px rgba(0,0,0,0.50);
+    max-height: auto;
+    max-width: 90%;
+    display: flex;
+  } 
+}
+
+
+
+/* iPhone 6, 7, 8 plus */
+
+@media only screen 
+    and (device-width : 414px) 
+    and (device-height : 736px) 
+    and (-webkit-device-pixel-ratio : 3) {
+
+      .flexPet {
+        height: 93%;
+        margin-top: 5%;
+        margin-bottom: 8%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #000000;
+        border-radius: 9px;
+     }
+
+     .favorite-pets img{
+      margin: 6% 0;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 8px;
+      -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+      -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+      box-shadow: 7px 7px 7px 0px rgba(0,0,0,0.50);
+      max-height: auto;
+      max-width: 60%;
+      display: flex;
+    } 
+  }
 

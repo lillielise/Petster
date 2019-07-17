@@ -5,6 +5,7 @@
 
   <h1>petster</h1>
 
+
   <h2>Fill out the info for your perfect pet below</h2>
     <main>
       <form id="user-form" action="/search" method="GET">
@@ -16,7 +17,7 @@
         <option name="Rabbit" value="Rabbit">Rabbit</option>
       </select>
 
-      <input type="number" name="city" placeholder="Enter Your Zip Code" value="98103">
+      <input class="form-input" type="number" name="city" placeholder="Enter Your Zip Code" value="98103">
       
       <select class="dropdown" name="travelDistance" id="travel-distance-dropdown">
         <option name="15-miles" value="15" class="dropbtn" >Distance from my location</option>
@@ -25,7 +26,7 @@
         <option name="25+-miles" value="25">25 miles</option>
       </select>
 
-        <input type="text" name="firstName" placeholder="Enter Your Username Here">
+        <input class="form-input" type="text" name="firstName" placeholder="Enter Your Username Here">
 
       <button id="submit" onclick="window.location.href='/search'">Submit</button>
     </form>
