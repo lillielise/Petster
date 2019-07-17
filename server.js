@@ -77,6 +77,17 @@ function renderHomepage(request, response) {
   response.render('pages/index');
 }
 
+function addUserName (queryName) {
+
+  const SQL = `
+  INSERT INTO users (username) SELECT '${queryName}' 
+  WHERE NOT EXISTS (SELECT * FROM users WHERE username = '${queryName}')
+  RETURNING id;
+  `;
+
+  return client.query(SQL)
+    .catch(error => handleError(error, response));
+}
 
 function renderSearchPage(request, response) {
 
@@ -95,6 +106,7 @@ function renderSearchPage(request, response) {
     .then(apiResponse => {
       // console.log(apiResponse.body.animals)
       const petInstances = apiResponse.body.animals
+      
         // .filter(petData => {
         //   if (petData.name.includes('adopted') || petData.name.includes('adoption')){
         //     return false;
@@ -103,7 +115,8 @@ function renderSearchPage(request, response) {
         //   }
         // })
         .map(pet => new Pet (pet))
-      response.render('pages/search', { petResultAPI: petInstances });
+      response.render('pages/search', { petResultAPI: petInstances })
+      addUserName(queryName);
     })
     .catch(error => handleError(error));
 }
@@ -162,7 +175,7 @@ function saveFavorite(request, response){
 }
 
 function renderSavedPets(request, response) {
-  let SQL = `SELECT * FROM favorites`;
+  let SQL = `SELECT * FROM pets`;
 
   return client.query(SQL)
     .then(results => {
