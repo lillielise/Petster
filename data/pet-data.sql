@@ -35,4 +35,4 @@ INSERT INTO users (username)
 VALUES('Bob');
 
 INSERT INTO favorite_pets (pet_id, user_id)
-VALUES('555', '5');
+VALUES('111', '1');

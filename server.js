@@ -9,6 +9,9 @@ const methodOverride = require('method-override');
 // Environment variables
 require('dotenv').config();
 
+// Global Variables
+let queryName;
+
 // Database set up
 const client = new pg.Client(process.env.DATABASE_URL)
 client.connect();
@@ -61,6 +64,11 @@ app.delete('/favorites/:id', deleteFavorite);
 
 // Helper Functions:
 
+// https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 function renderDetailsPageFromFav(request, response) {
   let SQL = 'SELECT * FROM favorites WHERE id=$1;';
   let values = [request.params.id];
@@ -94,7 +102,7 @@ function renderSearchPage(request, response) {
   let queryType = request.query.type;
   let queryZipCode = request.query.city;
   let queryDistance = request.query.travelDistance;
-  let queryName = request.query.firstName;
+  queryName = request.query.firstName;
 
 
   let URL = `https://api.petfinder.com/v2/animals?type=${queryType}&location=${queryZipCode}&distance=${queryDistance}&limit=100&sort=random&status=adoptable`
@@ -117,6 +125,7 @@ function renderSearchPage(request, response) {
         .map(pet => new Pet (pet))
       response.render('pages/search', { petResultAPI: petInstances })
       addUserName(queryName);
+      return queryName;
     })
     .catch(error => handleError(error));
 }
@@ -162,9 +171,11 @@ function saveFavorite(request, response){
   console.log('Petfinder ID!', petfinderid);
 
   const SQL = `
-  INSERT INTO favorites (petfinderid, type, name, age, gender, size, city, state, description, photo, url) SELECT '${petfinderid}','${type}','${name}', '${age}', '${gender}', '${size}','${city}', '${state}', '${description}', '${photo}', '${url}' 
+  INSERT INTO pets (petfinderid, type, name, age, gender, size, city, state, description, photo, url) SELECT '${petfinderid}','${type}','${name}', '${age}', '${gender}', '${size}','${city}', '${state}', '${description}', '${photo}', '${url}' 
   WHERE NOT EXISTS (SELECT * FROM favorites WHERE petfinderid = '${petfinderid}')
   RETURNING id;
+  
+  INSERT INTO favorite_pets (pet_id, user_id) VALUES ('${petfinderid}','${id}');
   `;
 
   return client.query(SQL)
@@ -175,11 +186,14 @@ function saveFavorite(request, response){
 }
 
 function renderSavedPets(request, response) {
+
+  console.log('queryname!!!', queryName)
   let SQL = `SELECT * FROM pets`;
 
   return client.query(SQL)
     .then(results => {
-      response.render('pages/favorites', {renderFavorites: results.rows})
+      response.render('pages/favorites', {renderFavorites: results.rows, name: capitalizeFirstLetter(queryName)})
+      
       // response.render('pages/favorites', {results: results.rows})
     })
     .catch(error => handleError(error, response));
