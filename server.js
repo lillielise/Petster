@@ -177,6 +177,7 @@ function saveFavorite(request, response){
 
   INSERT INTO favorite_pets (pet_id) VALUES ('${petfinderid}');
   INSERT INTO favorite_pets(username_id) SELECT id FROM users WHERE username='${queryName}';
+
   `;
 
   return client.query(SQL)

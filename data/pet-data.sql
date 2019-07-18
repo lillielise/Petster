@@ -34,5 +34,6 @@ VALUES('111','Cat','Merida','Young','Female','Medium','Orange','CA','Very sweet,
 INSERT INTO users (username)
 VALUES('Bob');
 
+
 INSERT INTO favorite_pets (pet_id, username_id)
 VALUES('111', '1');
