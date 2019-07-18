@@ -1,6 +1,3 @@
-
-
-
 h1 {
   font-family: 'Lobster', cursive;
   margin-top: 8%;
@@ -55,9 +52,6 @@ nav {
   justify-content: center;
 }
 
-.navLi {
-  /* margin-left:1em; */
-}
 
 .navA {
   margin-left: 0.5em;
