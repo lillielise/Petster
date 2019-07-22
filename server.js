@@ -10,7 +10,7 @@ const methodOverride = require('method-override');
 require('dotenv').config();
 
 // Global Variables
-let queryName;
+
 
 // Database set up
 const client = new pg.Client(process.env.DATABASE_URL)
@@ -70,7 +70,7 @@ function capitalizeFirstLetter(string) {
 }
 
 function renderDetailsPageFromFav(request, response) {
-  let SQL = 'SELECT * FROM favorites WHERE id=$1;';
+  let SQL = 'SELECT * FROM pets;';
   let values = [request.params.id];
   // console.log('rendering details', values[0]);
   return client.query(SQL, values)
@@ -87,10 +87,10 @@ function renderHomepage(request, response) {
 
 function addUserName (queryName) {
 
+
   const SQL = `
   INSERT INTO users (username) SELECT '${queryName}' 
-  WHERE NOT EXISTS (SELECT * FROM users WHERE username = '${queryName}')
-  RETURNING id;
+  WHERE NOT EXISTS (SELECT * FROM users WHERE username = '${queryName}');
   `;
 
   return client.query(SQL)
@@ -102,7 +102,9 @@ function renderSearchPage(request, response) {
   let queryType = request.query.type;
   let queryZipCode = request.query.city;
   let queryDistance = request.query.travelDistance;
-  queryName = request.query.firstName;
+  let queryName = request.query.userName;
+
+
 
 
   let URL = `https://api.petfinder.com/v2/animals?type=${queryType}&location=${queryZipCode}&distance=${queryDistance}&limit=100&sort=random&status=adoptable`
@@ -123,9 +125,8 @@ function renderSearchPage(request, response) {
         //   }
         // })
         .map(pet => new Pet (pet))
-      response.render('pages/search', { petResultAPI: petInstances })
+      response.render('pages/search', { petResultAPI: petInstances, userName: queryName})
       addUserName(queryName);
-      return queryName;
     })
     .catch(error => handleError(error));
 }
@@ -166,17 +167,15 @@ function Pet(query){
 
 function saveFavorite(request, response){
 
+  let { petfinderid, userName, type, name, age, gender, size, city, state, description, photo, url } = request.body;
 
-  let { petfinderid, type, name, age, gender, size, city, state, description, photo, url } = request.body;
-  console.log('Petfinder ID!', petfinderid);
 
   const SQL = `
   INSERT INTO pets (petfinderid, type, name, age, gender, size, city, state, description, photo, url) SELECT '${petfinderid}','${type}','${name}', '${age}', '${gender}', '${size}','${city}', '${state}', '${description}', '${photo}', '${url}' 
-  WHERE NOT EXISTS (SELECT * FROM favorites WHERE petfinderid = '${petfinderid}')
-  RETURNING id;
+  WHERE NOT EXISTS (SELECT * FROM favorites WHERE petfinderid = '${petfinderid}');
 
-  INSERT INTO favorite_pets (pet_id) VALUES ('${petfinderid}');
-  INSERT INTO favorite_pets(username_id) SELECT id FROM users WHERE username='${queryName}';
+  INSERT INTO favorite_pets (pet_id, username_id) VALUES ('${petfinderid}',(SELECT id FROM users WHERE username='${userName}'));
+
   `;
 
   return client.query(SQL)
@@ -188,17 +187,25 @@ function saveFavorite(request, response){
 
 function renderSavedPets(request, response) {
 
-  console.log('queryname!!!', queryName)
-  let SQL = `SELECT * FROM pets`;
+  console.log('REQUEST BODY',request.body)
+
+  console.log('FAV PARAMS!!', request)
+
+  let SQL = `
+    SELECT * FROM pets
+    INNER JOIN favorite_pets
+    ON petfinderid=pet_id
+    INNER JOIN users
+    ON users.id=username_id;
+  `;
 
   return client.query(SQL)
     .then(results => {
-      response.render('pages/favorites', {renderFavorites: results.rows, name: capitalizeFirstLetter(queryName)})
-      
-      // response.render('pages/favorites', {results: results.rows})
+      response.render('pages/favorites', {renderFavorites: results.rows})
     })
     .catch(error => handleError(error, response));
 }
+
 
 function deleteFavorite(request, response) {
   let SQL = 'DELETE FROM favorites WHERE id=$1;';
@@ -208,6 +215,7 @@ function deleteFavorite(request, response) {
     .then(() => response.redirect('/favorites'))
     .catch(err => handleError(err, response));
 }
+
 
 function renderAboutUsPage(request, response) {
   response.render('pages/aboutUs');
