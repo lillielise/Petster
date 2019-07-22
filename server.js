@@ -172,9 +172,17 @@ function saveFavorite(request, response){
 
   const SQL = `
   INSERT INTO pets (petfinderid, type, name, age, gender, size, city, state, description, photo, url) SELECT '${petfinderid}','${type}','${name}', '${age}', '${gender}', '${size}','${city}', '${state}', '${description}', '${photo}', '${url}' 
+<<<<<<< HEAD
   WHERE NOT EXISTS (SELECT * FROM favorites WHERE petfinderid = '${petfinderid}');
 
   INSERT INTO favorite_pets (pet_id, username_id) VALUES ('${petfinderid}',(SELECT id FROM users WHERE username='${userName}'));
+=======
+  WHERE NOT EXISTS (SELECT * FROM favorites WHERE petfinderid = '${petfinderid}')
+  RETURNING id;
+
+  INSERT INTO favorite_pets (pet_id) VALUES ('${petfinderid}');
+  INSERT INTO favorite_pets(username_id) SELECT id FROM users WHERE username='${queryName}';
+>>>>>>> 7d7545ef494b7f7d7001c6c08f509e141a6d3dc2
 
   `;
 
