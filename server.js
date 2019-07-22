@@ -174,8 +174,10 @@ function saveFavorite(request, response){
   INSERT INTO pets (petfinderid, type, name, age, gender, size, city, state, description, photo, url) SELECT '${petfinderid}','${type}','${name}', '${age}', '${gender}', '${size}','${city}', '${state}', '${description}', '${photo}', '${url}' 
   WHERE NOT EXISTS (SELECT * FROM favorites WHERE petfinderid = '${petfinderid}')
   RETURNING id;
-  
-  INSERT INTO favorite_pets (pet_id, user_id) VALUES ('${petfinderid}','${id}');
+
+  INSERT INTO favorite_pets (pet_id) VALUES ('${petfinderid}');
+  INSERT INTO favorite_pets(username_id) SELECT id FROM users WHERE username='${queryName}';
+
   `;
 
   return client.query(SQL)

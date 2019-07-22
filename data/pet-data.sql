@@ -25,7 +25,7 @@ CREATE TABLE users (
 CREATE TABLE favorite_pets (
   id SERIAL PRIMARY KEY,
   pet_id VARCHAR(255),
-  user_id VARCHAR(255)
+  username_id VARCHAR(255)
 );
 
 INSERT INTO pets (petfinderid, type, name, age, gender, size, city, state, description, photo, url)
@@ -34,5 +34,6 @@ VALUES('111','Cat','Merida','Young','Female','Medium','Orange','CA','Very sweet,
 INSERT INTO users (username)
 VALUES('Bob');
 
-INSERT INTO favorite_pets (pet_id, user_id)
+
+INSERT INTO favorite_pets (pet_id, username_id)
 VALUES('111', '1');
