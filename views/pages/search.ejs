@@ -42,6 +42,7 @@
     <form class ="petDetail <%=index %>Form" id="save-data" action="/favorites" method="post">
       <div class="hide-form-save-data">
         <input type="text" name="petfinderid" value="<%= item.petfinderid %>" required>
+        <input type="text" name="userName" value="<%= userName %>" required>
         <input type="text" name="type" value="<%= item.type %>" required>
         <input type="text" name="name" value="<%= item.name %>" required>  
         <input type="text" name="age" value="<%= item.age %>" required>  
