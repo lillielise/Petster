@@ -12,6 +12,7 @@ require('dotenv').config();
 // Global Variables
 
 
+
 // Database set up
 const client = new pg.Client(process.env.DATABASE_URL)
 client.connect();
@@ -97,13 +98,13 @@ function addUserName (queryName) {
     .catch(error => handleError(error, response));
 }
 
-function renderSearchPage(request, response) {
+function renderSearchPage(request, response, next) {
 
   let queryType = request.query.type;
   let queryZipCode = request.query.city;
   let queryDistance = request.query.travelDistance;
   let queryName = request.query.userName;
-
+  let isInDataBase = [];
 
 
 
@@ -114,19 +115,15 @@ function renderSearchPage(request, response) {
   return superagent.get(URL)
     .set('Authorization', `Bearer ${request.token}`)
     .then(apiResponse => {
-      // console.log(apiResponse.body.animals)
-      const petInstances = apiResponse.body.animals
       
-        // .filter(petData => {
-        //   if (petData.name.includes('adopted') || petData.name.includes('adoption')){
-        //     return false;
-        //   } else {
-        //     return true;
-        //   }
-        // })
-        .map(pet => new Pet (pet))
-      response.render('pages/search', { petResultAPI: petInstances, userName: queryName})
+      const petInstances = apiResponse.body.animals.map(pet => new Pet (pet, queryName, isInDataBase))
+  
+
+      console.log(isInDataBase)
+      response.render('pages/search', { petResultAPI: petInstances, userName: queryName, isInDataBase: isInDataBase})
       addUserName(queryName);
+      next();
+     
     })
     .catch(error => handleError(error));
 }
@@ -134,11 +131,10 @@ function renderSearchPage(request, response) {
 
 
 
-function Pet(query){
 
+function Pet(query, queryName, isInDataBase){
   this.type = query.type;
   this.petfinderid = query.id;
-  // console.log('THIS IS THE PETFINDER ID',this.petfinderid)
   this.name = query.name;
   this.age = query.age;
   this.gender = query.gender;
@@ -151,6 +147,9 @@ function Pet(query){
   this.primaryBreed = query.breeds.primary;
   this.secondaryBreed = query.breeds.secondary;
   this.photos = [];
+  this.inFavs = false;
+  
+
   // console.log(query.photos.length)
   if(query.photos.length){
     // console.log('hey')
@@ -163,7 +162,33 @@ function Pet(query){
   }
   // console.log(this.photos);
   this.photo = query.photos.length ? query.photos[0].large : 'http://www.placecage.com/200/200';
+  
+  // check if the pet is already in favorited pets
+  let SQL = `
+          SELECT * FROM pets
+          INNER JOIN favorite_pets
+          ON petfinderid=pet_id
+          INNER JOIN users
+          ON users.id=username_id
+          WHERE username = '${queryName}'
+          AND pet_id = '${this.petfinderid}';
+        `;
+  client.query(SQL)
+    .then(results => {
+      if (results.rows[0]){
+        this.inFavs = true;
+        console.log('true')
+      } else {
+        this.inFavs = false;
+      }
+      isInDataBase.push(this.inFavs);
+    })
+    .catch(error => handleError(error));
+ 
+
 }
+
+
 
 function saveFavorite(request, response){
 
@@ -172,17 +197,9 @@ function saveFavorite(request, response){
 
   const SQL = `
   INSERT INTO pets (petfinderid, type, name, age, gender, size, city, state, description, photo, url) SELECT '${petfinderid}','${type}','${name}', '${age}', '${gender}', '${size}','${city}', '${state}', '${description}', '${photo}', '${url}' 
-<<<<<<< HEAD
   WHERE NOT EXISTS (SELECT * FROM favorites WHERE petfinderid = '${petfinderid}');
 
   INSERT INTO favorite_pets (pet_id, username_id) VALUES ('${petfinderid}',(SELECT id FROM users WHERE username='${userName}'));
-=======
-  WHERE NOT EXISTS (SELECT * FROM favorites WHERE petfinderid = '${petfinderid}')
-  RETURNING id;
-
-  INSERT INTO favorite_pets (pet_id) VALUES ('${petfinderid}');
-  INSERT INTO favorite_pets(username_id) SELECT id FROM users WHERE username='${queryName}';
->>>>>>> 7d7545ef494b7f7d7001c6c08f509e141a6d3dc2
 
   `;
 
@@ -195,28 +212,30 @@ function saveFavorite(request, response){
 
 function renderSavedPets(request, response) {
 
-  console.log('REQUEST BODY',request.body)
+// get userName from request
+let userName = request.rawHeaders.toString().match(/(?<=userName=)([a-zA-Z]+)(?=,)/gm)[0];
 
-  console.log('FAV PARAMS!!', request)
 
   let SQL = `
     SELECT * FROM pets
     INNER JOIN favorite_pets
     ON petfinderid=pet_id
     INNER JOIN users
-    ON users.id=username_id;
+    ON users.id=username_id
+    WHERE username='${userName}';
   `;
+
 
   return client.query(SQL)
     .then(results => {
-      response.render('pages/favorites', {renderFavorites: results.rows})
+      response.render('pages/favorites', {renderFavorites: results.rows, userName: userName})
     })
     .catch(error => handleError(error, response));
 }
 
 
 function deleteFavorite(request, response) {
-  let SQL = 'DELETE FROM favorites WHERE id=$1;';
+  let SQL = 'DELETE FROM favorite_pets WHERE id=$1;';
   let values = [request.params.id];
 
   return client.query(SQL, values)
@@ -248,6 +267,8 @@ function getToken(request, response, next) {
     })
     .catch(error => handleError(error));
 }
+
+
 
 
 // Button Event Handler
