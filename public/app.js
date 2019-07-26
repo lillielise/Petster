@@ -1,28 +1,27 @@
+// global variables
+
 
 // handles details click on search page
 $('.info-icon').on('click', function(){
-  console.log('you clicked!')
   $('.view-details').show();
   $('.info-icon').hide();
   $('.heart-icon-hide').hide();
-  $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+  $('html, body').animate({ scrollTop: $(document).height() }, 'slow');
 });
 
 
 let count = 0;
 $(`.${count}`).show();
 
+
 // submits the pet details form on heart click
 $('.heart-icon').on('click', event => {
   $(`#heart-icon${count}`).toggleClass('image-fade');
   setTimeout(() => $(`#heart-icon${count} > path`).attr('fill', 'red' ), 800)
-  console.log(' you clicked the submit!')
   $(`.${count}Form`).submit();
 })
 
 $('delete-icon-class').on('click', event => {
- 
-  console.log(' you clicked the delete button')
   $(`.${count}Form`).submit();
 })
 
@@ -35,7 +34,6 @@ $(`.flexPet`).click(function(event){
   var x = event.pageX - $(this).offset().left
 
   if (x > $(this).width()/2) {
-    console.log('right half', count)
 
     count++
     $('.view-details').hide();
@@ -44,7 +42,6 @@ $(`.flexPet`).click(function(event){
     $(`.${count-1}`).hide();
 
   } else {
-    console.log('left half')
     if (count !== 0){
       count--
       $('.view-details').hide();

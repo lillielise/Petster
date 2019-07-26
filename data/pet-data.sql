@@ -25,11 +25,7 @@ CREATE TABLE users (
 CREATE TABLE favorite_pets (
   id SERIAL PRIMARY KEY,
   pet_id VARCHAR(255),
-<<<<<<< HEAD
   username_id INT
-=======
-  username_id VARCHAR(255)
->>>>>>> 7d7545ef494b7f7d7001c6c08f509e141a6d3dc2
 );
 
 INSERT INTO pets (petfinderid, type, name, age, gender, size, city, state, description, photo, url)
@@ -38,11 +34,5 @@ VALUES('111','Cat','Merida','Young','Female','Medium','Orange','CA','Very sweet,
 INSERT INTO users (username)
 VALUES('Bob');
 
-<<<<<<< HEAD
 INSERT INTO favorite_pets (pet_id, username_id)
 VALUES('111', 1);
-=======
-
-INSERT INTO favorite_pets (pet_id, username_id)
-VALUES('111', '1');
->>>>>>> 7d7545ef494b7f7d7001c6c08f509e141a6d3dc2
