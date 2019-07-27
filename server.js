@@ -57,24 +57,23 @@ app.set('view engine', 'ejs');
 
 app.get('/', getToken, renderHomepage);
 app.get('/search', getToken, renderSearchPage);
-app.get('/details/:id', renderDetailsPageFromFav);
+app.get('/details', renderDetailsPageFromFav);
 app.get('/aboutUs', renderAboutUsPage);
 app.post('/favorites', saveFavorite);
 app.get('/favorites', renderSavedPets);
-app.delete('/favorites/:id', deleteFavorite);
+app.delete('/favorites', deleteFavorite);
 
 // Helper Functions:
 
 // https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
+
 
 function renderDetailsPageFromFav(request, response) {
-  let SQL = 'SELECT * FROM pets;';
-  let values = [request.params.id];
+
+  let SQL = `SELECT * FROM pets WHERE petfinderid = '${request.query.petfinderid}';`;
+ 
   // console.log('rendering details', values[0]);
-  return client.query(SQL, values)
+  return client.query(SQL)
     .then(results => {
       // console.log(results);
       response.render('pages/details', {petDetailsResponse: results.rows[0]})
@@ -115,15 +114,15 @@ function renderSearchPage(request, response, next) {
   return superagent.get(URL)
     .set('Authorization', `Bearer ${request.token}`)
     .then(apiResponse => {
-      
+
       const petInstances = apiResponse.body.animals.map(pet => new Pet (pet, queryName, isInDataBase))
-  
+
 
       console.log(isInDataBase)
       response.render('pages/search', { petResultAPI: petInstances, userName: queryName, isInDataBase: isInDataBase})
       addUserName(queryName);
       next();
-     
+
     })
     .catch(error => handleError(error));
 }
@@ -148,7 +147,7 @@ function Pet(query, queryName, isInDataBase){
   this.secondaryBreed = query.breeds.secondary;
   this.photos = [];
   this.inFavs = false;
-  
+
 
   // console.log(query.photos.length)
   if(query.photos.length){
@@ -162,7 +161,7 @@ function Pet(query, queryName, isInDataBase){
   }
   // console.log(this.photos);
   this.photo = query.photos.length ? query.photos[0].large : 'http://www.placecage.com/200/200';
-  
+
   // check if the pet is already in favorited pets
   let SQL = `
           SELECT * FROM pets
@@ -184,7 +183,7 @@ function Pet(query, queryName, isInDataBase){
       isInDataBase.push(this.inFavs);
     })
     .catch(error => handleError(error));
- 
+
 
 }
 
@@ -212,9 +211,13 @@ function saveFavorite(request, response){
 
 function renderSavedPets(request, response) {
 
-// get userName from request
-let userName = request.rawHeaders.toString().match(/(?<=userName=)([a-zA-Z]+)(?=,)/gm)[0];
+  
 
+  // get userName from request
+  // let userName = request.rawHeaders.toString().match(/(?<=userName=)([a-zA-Z]+)(?=,)/gm)[0] ? request.rawHeaders.toString().match(/(?<=userName=)([a-zA-Z]+)(?=,)/gm)[0] : userNameSaved;
+  
+  let userName = 'Lillie';
+  // console.log('REQUEST',request)
 
   let SQL = `
     SELECT * FROM pets
@@ -235,12 +238,29 @@ let userName = request.rawHeaders.toString().match(/(?<=userName=)([a-zA-Z]+)(?=
 
 
 function deleteFavorite(request, response) {
-  let SQL = 'DELETE FROM favorite_pets WHERE id=$1;';
-  let values = [request.params.id];
 
-  return client.query(SQL, values)
-    .then(() => response.redirect('/favorites'))
+  let userName = request.body.userName;
+
+  let petfinderid = request.body.petfinderid;
+ 
+  let SQL = `DELETE FROM favorite_pets WHERE pet_id='${petfinderid}';
+    SELECT * FROM pets
+    INNER JOIN favorite_pets
+    ON petfinderid=pet_id
+    INNER JOIN users
+    ON users.id=username_id
+    WHERE username='${userName}';
+  `;
+
+  
+
+  return client.query(SQL)
+    .then(results => {
+      response.render('pages/favorites', {renderFavorites: results[1].rows, userName: userName})
+    })
     .catch(err => handleError(err, response));
+
+
 }
 
 
