@@ -5,7 +5,7 @@
 <ul class="navUl">
   <li class="navLi"><a class="navA" href="/">Home</a></li>
   <li class="navA">.</li>
-  <li class="navLi"><a class="navA" href="/favorites">Favorites</a></li>
+  <li class="navLi"><a class="navA" href="/favorites/<%=userName%>">Favorites</a></li>
   <li class="navA">.</li>
   <li class="navLi"><a class="navA" href="/aboutUs">About Us</a></li>
 </ul>
@@ -40,6 +40,7 @@
           <form class="unlist infoFavButton" action="/details" method="get">
             <input id="info-icon-fav" type="image" src="/img/view-details-icon-256.png" />
             <div class="hide-form-save-data">
+              <input type="text" name="userName" value="<%= userName %>" required>
               <input type="text" name="petfinderid" value="<%= item.petfinderid %>" required>
             </div>
           </form>
