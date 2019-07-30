@@ -60,7 +60,7 @@ app.get('/search', getToken, renderSearchPage);
 app.get('/details', renderDetailsPageFromFav);
 app.get('/aboutUs', renderAboutUsPage);
 app.post('/favorites', saveFavorite);
-app.get('/favorites', renderSavedPets);
+app.get('/favorites/:userName', renderSavedPets);
 app.delete('/favorites', deleteFavorite);
 
 // Helper Functions:
@@ -72,11 +72,11 @@ function renderDetailsPageFromFav(request, response) {
 
   let SQL = `SELECT * FROM pets WHERE petfinderid = '${request.query.petfinderid}';`;
  
-  // console.log('rendering details', values[0]);
+  console.log('params', request.query);
   return client.query(SQL)
     .then(results => {
       // console.log(results);
-      response.render('pages/details', {petDetailsResponse: results.rows[0]})
+      response.render('pages/details', {petDetailsResponse: results.rows[0], userName:request.query.userName})
     })
     .catch(err => handleError(err, response));
 }
@@ -211,13 +211,13 @@ function saveFavorite(request, response){
 
 function renderSavedPets(request, response) {
 
-  
+  let userName = request.params.userName
 
   // get userName from request
   // let userName = request.rawHeaders.toString().match(/(?<=userName=)([a-zA-Z]+)(?=,)/gm)[0] ? request.rawHeaders.toString().match(/(?<=userName=)([a-zA-Z]+)(?=,)/gm)[0] : userNameSaved;
   
-  let userName = 'Lillie';
-  // console.log('REQUEST',request)
+
+  // userName.log('REQUEST',request)
 
   let SQL = `
     SELECT * FROM pets

@@ -17,8 +17,8 @@ $(`.${count}`).show();
 // submits the pet details form on heart click
 $('.heart-icon').on('click', event => {
   $(`#heart-icon${count}`).toggleClass('image-fade');
-  setTimeout(() => $(`#heart-icon${count} > path`).attr('fill', 'red' ), 800)
   $(`.${count}Form`).submit();
+  setTimeout(() => $(`#heart-icon${count} > path`).attr('fill', 'red' ), 0)
 })
 
 $('delete-icon-class').on('click', event => {
