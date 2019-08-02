@@ -37,7 +37,7 @@ $(`.flexPet`).click(function(event){
 
     count++
     $('.view-details').hide();
-    $('.btnDetails').show();
+    $('.info-icon').show();
     $(`.${count}`).show();
     $(`.${count-1}`).hide();
 
@@ -45,7 +45,7 @@ $(`.flexPet`).click(function(event){
     if (count !== 0){
       count--
       $('.view-details').hide();
-      $('.btnDetails').show();
+      $('.info-icon').show();
       $(`.${count}`).show();
       $(`.${count+1}`).hide();
     }
