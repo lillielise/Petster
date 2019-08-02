@@ -103,18 +103,21 @@ function renderSearchPage(request, response, next) {
   let queryZipCode = request.query.city;
   let queryDistance = request.query.travelDistance;
   let queryName = request.query.userName;
+  let queryGoodWithChildren = request.query.goodWithChildren ? request.query.goodWithChildren : false ;
+  let queryGoodWithDogs = request.query.goodWithDogs ? request.query.goodWithChildren : false ;
+  let queryGoodWithCats = request.query.goodWithCats ? request.query.goodWithChildren : false ;
   let isInDataBase = [];
 
+  
 
 
-  let URL = `https://api.petfinder.com/v2/animals?type=${queryType}&location=${queryZipCode}&distance=${queryDistance}&limit=100&sort=random&status=adoptable`
+  let URL = `https://api.petfinder.com/v2/animals?type=${queryType}&location=${queryZipCode}&distance=${queryDistance}&good_with_children=${queryGoodWithChildren}&good_with_dogs=${queryGoodWithDogs}&good_with_cats=${queryGoodWithCats}&limit=100&sort=random&status=adoptable`
 
-
+  console.log('!!!',URL)
 
   return superagent.get(URL)
     .set('Authorization', `Bearer ${request.token}`)
     .then(apiResponse => {
-
       const petInstances = apiResponse.body.animals.map(pet => new Pet (pet, queryName, isInDataBase))
 
 
@@ -211,13 +214,7 @@ function saveFavorite(request, response){
 
 function renderSavedPets(request, response) {
 
-  let userName = request.params.userName
-
-  // get userName from request
-  // let userName = request.rawHeaders.toString().match(/(?<=userName=)([a-zA-Z]+)(?=,)/gm)[0] ? request.rawHeaders.toString().match(/(?<=userName=)([a-zA-Z]+)(?=,)/gm)[0] : userNameSaved;
-  
-
-  // userName.log('REQUEST',request)
+  let userName = request.params.userName;
 
   let SQL = `
     SELECT * FROM pets
