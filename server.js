@@ -103,15 +103,8 @@ function renderSearchPage(request, response, next) {
   let queryZipCode = request.query.city;
   let queryDistance = request.query.travelDistance;
   let queryName = request.query.userName;
-  let queryGoodWithChildren = request.query.goodWithChildren ? request.query.goodWithChildren : false ;
-  let queryGoodWithDogs = request.query.goodWithDogs ? request.query.goodWithChildren : false ;
-  let queryGoodWithCats = request.query.goodWithCats ? request.query.goodWithChildren : false ;
-  let isInDataBase = [];
 
-  
-
-
-  let URL = `https://api.petfinder.com/v2/animals?type=${queryType}&location=${queryZipCode}&distance=${queryDistance}&good_with_children=${queryGoodWithChildren}&good_with_dogs=${queryGoodWithDogs}&good_with_cats=${queryGoodWithCats}&limit=100&sort=random&status=adoptable`
+  let URL = `https://api.petfinder.com/v2/animals?type=${queryType}&location=${queryZipCode}&distance=${queryDistance}&limit=100&sort=random&status=adoptable`
 
   console.log('!!!',URL)
 
@@ -119,9 +112,6 @@ function renderSearchPage(request, response, next) {
     .set('Authorization', `Bearer ${request.token}`)
     .then(apiResponse => {
       const petInstances = apiResponse.body.animals.map(pet => new Pet (pet, queryName, isInDataBase))
-
-
-      console.log(isInDataBase)
       response.render('pages/search', { petResultAPI: petInstances, userName: queryName, isInDataBase: isInDataBase})
       addUserName(queryName);
       next();
@@ -149,45 +139,7 @@ function Pet(query, queryName, isInDataBase){
   this.primaryBreed = query.breeds.primary;
   this.secondaryBreed = query.breeds.secondary;
   this.photos = [];
-  this.inFavs = false;
-
-
-  // console.log(query.photos.length)
-  if(query.photos.length){
-    // console.log('hey')
-    for (let i = 0; i < query.photos.length; i++){
-      // console.log(`hi, ${i}`)
-      // console.log(query.photos[i].large)
-      this.photos.push(query.photos[i].large);
-      // this.photo[i] = query.photos[i].large;
-    }
-  }
-  // console.log(this.photos);
   this.photo = query.photos.length ? query.photos[0].large : 'http://www.placecage.com/200/200';
-
-  // check if the pet is already in favorited pets
-  let SQL = `
-          SELECT * FROM pets
-          INNER JOIN favorite_pets
-          ON petfinderid=pet_id
-          INNER JOIN users
-          ON users.id=username_id
-          WHERE username = '${queryName}'
-          AND pet_id = '${this.petfinderid}';
-        `;
-  client.query(SQL)
-    .then(results => {
-      if (results.rows[0]){
-        this.inFavs = true;
-        console.log('true')
-      } else {
-        this.inFavs = false;
-      }
-      isInDataBase.push(this.inFavs);
-    })
-    .catch(error => handleError(error));
-
-
 }
 
 
@@ -195,7 +147,6 @@ function Pet(query, queryName, isInDataBase){
 function saveFavorite(request, response){
 
   let { petfinderid, userName, type, name, age, gender, size, city, state, description, photo, url } = request.body;
-
 
   const SQL = `
   INSERT INTO pets (petfinderid, type, name, age, gender, size, city, state, description, photo, url) SELECT '${petfinderid}','${type}','${name}', '${age}', '${gender}', '${size}','${city}', '${state}', '${description}', '${photo}', '${url}' 
@@ -206,7 +157,7 @@ function saveFavorite(request, response){
   `;
 
   return client.query(SQL)
-    .then(sqlResults => { //console.log('hello')
+    .then(sqlResults => { 
       response.redirect(`/search`)
     })
     .catch(error => handleError(error, response));
