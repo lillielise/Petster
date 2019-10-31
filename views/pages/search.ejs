@@ -11,12 +11,6 @@
 </ul>
 </nav>
 
-
-<!-- <img id="heart" src="/img/like.png"> -->
-<!-- Display Pets -->
-
-
-
 <% var petArrayLength = petResultAPI.length; %> 
 
 <% petResultAPI.forEach((item, index) => { %>
@@ -83,27 +77,6 @@
 
   <script>
     var hearts = document.getElementsByClassName('heart-icon');
-    
-
-    let isInFavs = <%- JSON.stringify(isInDataBase) %>
-
-    console.log(isInFavs)
-
-   
-
-    console.log('IS IN FAVE',isInFavs)
- 
-  
-      for (var favsCount = 0; favsCount < isInFavs.length; favsCount++){
-        if (isInFavs[favsCount] === true){
-          console.log('its true')
-          let heart = document.getElementById(`heart-path${favsCount}`)
-          heart.setAttribute('fill', 'red');
-        }
-      }
-    
-    
-    
   </script>
     
 

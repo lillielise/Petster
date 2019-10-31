@@ -111,8 +111,8 @@ function renderSearchPage(request, response, next) {
   return superagent.get(URL)
     .set('Authorization', `Bearer ${request.token}`)
     .then(apiResponse => {
-      const petInstances = apiResponse.body.animals.map(pet => new Pet (pet, queryName, isInDataBase))
-      response.render('pages/search', { petResultAPI: petInstances, userName: queryName, isInDataBase: isInDataBase})
+      const petInstances = apiResponse.body.animals.map(pet => new Pet (pet, queryName))
+      response.render('pages/search', { petResultAPI: petInstances, userName: queryName})
       addUserName(queryName);
       next();
 
