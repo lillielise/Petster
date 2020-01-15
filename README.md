@@ -27,8 +27,6 @@ https://fontawesome.com/license
 * [Visual Studio Code](https://code.visualstudio.com/) - The code editor.
 * [GitHub](https://github.com/) -  Version control.
 
-## License
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
 Thank you to our incredible 301 instructors: JB Tellez, Hannah Ingham, Ryan Gallaway, Jacob Knaack, and to everyone at 301d48!
